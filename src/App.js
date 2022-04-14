@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback} from 'react';
+import React, { useState, useEffect , useCallback, useRef} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -7,6 +7,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
+  const title = useRef();
+  const opening = useRef();
+  const date = useRef();
+
+  const submitHandler=(event)=>{
+    event.preventDefault();
+    console.log(title.current.value);
+    console.log(opening.current.value);
+    console.log(date.current.value);
+  }
 
   const fetchMoviesHandler= useCallback(async ()=>{
 
@@ -51,6 +61,17 @@ function App() {
     
   return (
     <React.Fragment>
+      <section>
+        <form onSubmit={submitHandler}>
+          <label>Title</label>
+          <input ref={title} type='text'></input><br/><br/>
+          <label>Opening Text</label>
+          <input ref={opening} type='text'></input><br/><br/>
+          <label>Release Date</label>
+          <input ref={date} type='date'></input><br/><br/>
+          <button >Add Movies</button>
+        </form>
+      </section>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
