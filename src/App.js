@@ -16,6 +16,24 @@ function App() {
     console.log(title.current.value);
     console.log(opening.current.value);
     console.log(date.current.value);
+    const movie ={
+      title:title.current.value,
+      openingText:opening.current.value,
+      releaseDate:date.current.value
+    }
+    addMovie(movie);
+  }
+
+  async function addMovie(movie){
+    const response = await fetch('https://react-http-adc70-default-rtdb.firebaseio.com/movies.json',{
+      method:'POST',
+      body:JSON.stringify(movie),
+      headers:{
+        'Content-Type':'application/json'
+      }
+    });
+    const data = await response.json();
+    console.log(data);
   }
 
   const fetchMoviesHandler= useCallback(async ()=>{
@@ -24,20 +42,25 @@ function App() {
     setIsLoading(true);
     try{
     
-    const response = await fetch('https://swapi.py4e.com/api/films');
+    const response = await fetch('https://react-http-adc70-default-rtdb.firebaseio.com/movies.json');
     if(!response.ok){
       throw new Error('Something went wrong !');
     }
     const data = await response.json();
-        const transformedMovies = data.results.map((movieData)=>{
-          return {
-            id:movieData.episode_id,
-            title:movieData.title,
-            openingText:movieData.opening_crawl,
-            releaseDate:movieData.release_date
-        };
-      })
-        setMovies(transformedMovies);
+    console.log(data);
+    const loadedData = [];
+   
+    for(const key in data){
+      
+      loadedData.push({
+        id:key,
+        title:data[key].title,
+        openingText:data[key].openingText,
+        releaseDate:data[key].releaseDate
+      });
+    }
+       
+        setMovies(loadedData);
         
       }catch(error){
           setError(error.message);
@@ -53,7 +76,7 @@ function App() {
       content = <p>Loading...</p>;
      }
     if(movies.length>0){
-      content=<MoviesList movies={movies} />;
+      content=<MoviesList  movies={movies} />;
     }
     
     
@@ -61,7 +84,9 @@ function App() {
     
   return (
     <React.Fragment>
+      
       <section>
+        
         <form onSubmit={submitHandler}>
           <label>Title</label>
           <input ref={title} type='text'></input><br/><br/>
